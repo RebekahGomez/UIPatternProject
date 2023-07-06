@@ -34,7 +34,8 @@ function displayCurrentImage() {
 
   checkImage(images[currentIndex].urls[urlCounter], imgElement)
 
-  document.querySelector(".dogBreed").innerText = images[currentIndex].breed;
+  let breed = images[currentIndex].breed;
+  document.querySelector(".dogBreed").innerText = breed.charAt(0).toUpperCase() + breed.slice(1);
 }
 
 let prevButton = document.querySelector(".prevButton");
