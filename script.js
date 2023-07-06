@@ -1,20 +1,51 @@
-let currentImage = "";
+// let currentImage = "";
+
+let images = [];
+let currentIndex = 0;
+let breed = "";
+
+// prevButton.addEventListener("click", fetchDogImage);
+// nextButton.addEventListener("click", fetchDogImage);
+
+function fetchDogImage() {
+  fetch("https://dog.ceo/api/breed/bouvier/images")
+    .then(res => res.json())
+    .then(data => {
+      images = data.message;
+      breed = "Bouvier";
+      currentIndex = 0;
+      displayCurrentImage();
+    })
+    .catch(error => console.error(error));
+}
+
+function displayCurrentImage() {
+  if (images.length > 0 && currentIndex >= 0 && currentIndex < images.length) {
+    document.getElementById("dog-image").src = images[currentIndex];
+    document.querySelector(".dogBreed").innerText = breed;
+  } else {
+    console.error("Invalid index or images array is empty");
+  }
+}
 
 let prevButton = document.querySelector(".prevButton");
 let nextButton = document.querySelector(".nextButton");
 
-prevButton.addEventListener("click", fetchDogImage);
-nextButton.addEventListener("click", fetchDogImage);
+prevButton.addEventListener("click", function () {
+  currentIndex--;
+  if (currentIndex < 0) {
+    currentIndex = images.length - 1;
+  }
+  displayCurrentImage();
+});
 
-function fetchDogImage() {
-  fetch("https://dog.ceo/api/breeds/image/random")
-    .then(res => res.json())
-    .then(data => {
-      currentImage = data.message;
-      document.getElementById("dog-image").src = currentImage;
-    })
-    .catch(error => console.error(error));
-}
+nextButton.addEventListener("click", function () {
+  currentIndex++;
+  if (currentIndex >= images.length) {
+    currentIndex = 0;
+  }
+  displayCurrentImage();
+});
 
 fetchDogImage();
 
