@@ -1,18 +1,12 @@
-// let currentImage = "";
-
-// prevButton.addEventListener("click", fetchDogImage);
-// nextButton.addEventListener("click", fetchDogImage);
-
 let images = [];
 let breeds = [];
 let currentIndex = 0;
-// let breed = "";
+let urlCounter = 0;
 
 function fetchDogImage() {
   fetch("https://dog.ceo/api/breeds/list/all")
     .then(res => res.json())
     .then(data => {
-      // images = data.message;
       breeds = Object.keys(data.message);
       fetchImagesForBreeds();
     })
@@ -25,7 +19,7 @@ function fetchImagesForBreeds() {
       .then(res => res.json())
       .then(data => {
         if (data.message && data.message.length) {
-          images.push({ breed: breed, url: data.message[0] });
+          images.push({ breed: breed, urls: [...data.message] });
         }
         if (breed === breeds[breeds.length - 1]) {
           displayCurrentImage();
@@ -36,12 +30,11 @@ function fetchImagesForBreeds() {
 }
 
 function displayCurrentImage() {
-  if (images.length > 0 && currentIndex >= 0 && currentIndex < images.length) {
-    document.getElementById("dog-image").src = images[currentIndex].url;
-    document.querySelector(".dogBreed").innerText = images[currentIndex].breed;
-  } else {
-    console.error("Invalid index or images array is empty");
-  }
+  let imgElement = document.getElementById("dog-image");
+
+  checkImage(images[currentIndex].urls[urlCounter], imgElement)
+
+  document.querySelector(".dogBreed").innerText = images[currentIndex].breed;
 }
 
 let prevButton = document.querySelector(".prevButton");
@@ -64,6 +57,23 @@ nextButton.addEventListener("click", function () {
 });
 
 fetchDogImage();
+
+function checkImage(url, imgElement) {
+  let request = new XMLHttpRequest();
+  request.open("GET", url, true);
+
+  request.addEventListener("load", function () { // Image Success: Use Current Url
+    if (request.status === 200) {
+      imgElement.src = images[currentIndex].urls[urlCounter];
+    }
+  });
+
+  request.addEventListener("error", function () { // Image Error: Select next image over
+    imgElement.src = images[currentIndex].urls[urlCounter + 1];
+  });
+
+  request.send();
+}
 
 
 // everything below was practice we went over in class
